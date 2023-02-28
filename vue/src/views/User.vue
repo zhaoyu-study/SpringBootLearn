@@ -127,7 +127,7 @@ export default {
           this.$message.error("保存失败")
         }
       })
-      this.form=[]
+      this.form={}
       this.dialogFormVisible=false
       this.load();
 

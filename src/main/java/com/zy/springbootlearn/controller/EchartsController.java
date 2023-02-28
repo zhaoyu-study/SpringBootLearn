@@ -1,6 +1,7 @@
 package com.zy.springbootlearn.controller;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.Quarter;
 import com.zy.springbootlearn.common.Result;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.time.Month;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -48,14 +50,14 @@ public class EchartsController {
         int q4 = 0;
         //键入 iter 快速生成 for 循环框架
         for (User user : list) {
-            Date createTime = user.getCreateTime();
+            int month = user.getCreateTime().getMonthValue();
             //根据时间自动获得其 季度数
-            Quarter quarter = DateUtil.quarterEnum(createTime);
+            int quarter = (month+2)/3;
             switch (quarter){
-                case Q1:q1 +=1;break;
-                case Q2:q2 +=1;break;
-                case Q3:q3 +=1;break;
-                case Q4:q4 +=1;break;
+                case 1:q1 +=1;break;
+                case 2:q2 +=1;break;
+                case 3:q3 +=1;break;
+                case 4:q4 +=1;break;
                 default:break;
             }
         }

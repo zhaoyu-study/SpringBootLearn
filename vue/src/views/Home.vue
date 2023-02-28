@@ -5,7 +5,7 @@
       <el-col :span="24">
         <div id="title1"  style="width: 80%; height: 60px;margin:auto">
         </div>
-      </el-col>
+      </el-col>管理系统
     </el-row>
 
 
