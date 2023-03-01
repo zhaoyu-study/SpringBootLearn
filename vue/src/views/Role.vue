@@ -11,7 +11,7 @@
 
     </div>
 
-    <el-table :data="tableData" border stripe :header-cell-class-name="'headerBg'" @selection-change="handleSelectionChange">
+    <el-table :data="tableData" border stripe :header-cell-class-name="'headerBg'"  @selection-change="handleSelectionChange">
       <el-table-column width="50" type="selection" align="center">
       </el-table-column>
       <el-table-column  align="center" label="ID" width="80" >
@@ -28,8 +28,8 @@
 
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
-          <el-button type="text" @click="handleEdit(scope.row)">编辑<i class="el-icon-edit"></i></el-button>
           <el-button type="info" @click="selectMenu(scope.row.roleId)">分配菜单<i class="el-icon-menu"></i></el-button>
+          <el-button type="text" @click="handleEdit(scope.row)">编辑<i class="el-icon-edit"></i></el-button>
           <el-button type="danger" @click="deleteBatchData([scope.row.roleId])" >删除<i class="el-icon-delete"></i></el-button>
         </template>
       </el-table-column>
@@ -63,9 +63,11 @@
 
     <el-dialog title="菜单分配" :visible.sync="MenuDialogVisible" width="40%" :before-close="cancel" custom-class="class_radius">
       <el-tree
+          :props="props"
           :data="menuData"
           show-checkbox
           node-key="id"
+          :default-expanded-keys="[1,2]"
           @check-change="handleCheckChange">
       </el-tree>
 
@@ -91,7 +93,11 @@ export default {
       MenuDialogVisible: false,
       form:{},
       multipleSelection:[],
-      menuData: [{
+      menuData:[],
+      props:{
+        label:"menuName"
+      },//指定节点标签为节点对象的某个属性值
+/*      menuData: [{
         id: 1,
         label: '主页',
         children: []
@@ -115,7 +121,7 @@ export default {
           label: '文件管理',
           children: []
         }]
-      }],
+      }],*/
 /*      defaultProps: {
         children: 'children',
         label: 'label'
@@ -196,7 +202,7 @@ export default {
 
     cancel(){
       this.form={};
-      this.MenuDialogVisible=false;
+      this.dialogFormVisible=false;
     },
     handleCurrentChange(pageNo){
       //console.log(pageNo)
@@ -210,16 +216,20 @@ export default {
     },
     selectMenu(roleId){
       this.MenuDialogVisible=true
+      //请求菜单数据
+      this.request.get("/menu/findAll",{
+        params:{
+          menuName:""
+        }
+      }).then(res =>{
+        this.menuData = res.data;
+      })
 
     },
 
     handleCheckChange(data, checked, indeterminate) {
       console.log(data, checked, indeterminate);
     },
-
-    menuData(){
-
-    }
 
   }
 }

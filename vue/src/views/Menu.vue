@@ -6,17 +6,17 @@
     </div>
 
     <div style="padding: 10px 0">
-      <el-button type="primary" @click="dialogFormVisible = true">增加 <i class="el-icon-circle-plus-outline"></i></el-button>
+      <el-button type="primary" @click="dialogFormVisible = true">新增 <i class="el-icon-circle-plus-outline"></i></el-button>
       <el-button type="primary" @click="delBatch">批量删除 <i class="el-icon-remove-outline"></i></el-button>
 
     </div>
 
-    <el-table :data="tableData" border stripe :header-cell-class-name="'headerBg'" @selection-change="handleSelectionChange">
+    <el-table :data="tableData" border stripe :header-cell-class-name="'headerBg'" row-key="menuId" @selection-change="handleSelectionChange">
       <el-table-column width="50" type="selection" align="center">
       </el-table-column>
       <el-table-column  align="center" label="ID" width="80" >
         <template slot-scope="scope">
-          {{(scope.$index+1)+(pageNo-1)*pageSize}}
+          {{(scope.$index+1)}}
         </template>
       </el-table-column>
       <el-table-column prop="menuId" align="center" label="菜单ID" v-if="false">
@@ -34,10 +34,11 @@
         <template slot-scope="scope">
           <el-button type="text" @click="handleEdit(scope.row)">编辑<i class="el-icon-edit"></i></el-button>
           <el-button type="danger" @click="deleteBatchData([scope.row.menuId])" >删除<i class="el-icon-delete"></i></el-button>
+          <el-button type="success" icon="el-icon-plus" circle style="float: right" v-if="!scope.row.pid" @click="addChildren(scope.row.menuId)"></el-button><!--v-if="!scope.row.pid" 没有子数据则不放这个按钮-->
         </template>
       </el-table-column>
     </el-table>
-    <div style="padding: 10px 0">
+<!--    <div style="padding: 10px 0">
       <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
@@ -47,7 +48,7 @@
           layout="total, sizes, prev, pager, next, jumper"
           :total=total>
       </el-pagination>
-    </div>
+    </div>-->
     <el-dialog title="用户信息" :visible.sync="dialogFormVisible" width="40%" :before-close="cancel">
       <el-form :model="{form}"  label-width="80px" size="big">
         <el-form-item label="菜单名称" >
@@ -79,9 +80,9 @@ export default {
     return{
       menuName:"",
       tableData: [],
-      total: 0,
-      pageNo:1,
-      pageSize:10,
+      //total: 0,
+      //pageNo:1,
+      //pageSize:10,
       dialogFormVisible: false,
       form:{},
       multipleSelection:[],
@@ -92,16 +93,16 @@ export default {
   },
   methods:{
     load(){
-      this.request.get("/menu/page",{
+      this.request.get("/menu/findAll",{
         params:{
-          pageNo:this.pageNo,
-          pageSize:this.pageSize,
+          /*pageNo:this.pageNo,
+          pageSize:this.pageSize,*/
           menuName:this.menuName
         }
       }).then(res =>{
         //console.log(res);
-        this.tableData = res.data.records;
-        this.total=res.data.total;
+        this.tableData = res.data;
+        //this.total=res.data.total;
       })
     },
 
@@ -183,6 +184,13 @@ export default {
         return true
       }
     },*/
+    addChildren(pid){
+      this.dialogFormVisible = true
+      this.form = {}
+      if(pid){
+        this.form.pid = pid
+      }
+    },
   }
 }
 </script>

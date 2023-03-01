@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * (Menu)表控制层
@@ -44,6 +45,23 @@ public class MenuController {
         //queryWrapper.orderByDesc("");
         return Result.success(this.menuService.page(new Page<>(pageNo,pageSize),wrapper));
     }
+
+    @GetMapping("/findAll")
+    public Result findAll(@RequestParam(defaultValue = "") String menuName){
+        QueryWrapper<Menu> wrapper = new QueryWrapper<>();
+        if(!menuName.equals(""))
+            wrapper.like("menu_name",menuName);
+        //查询所有数据
+        List<Menu> list = menuService.list(wrapper);
+        //先找出pid为null的一级菜单
+        List<Menu> parentNode = list.stream().filter(menu -> menu.getPid() == null).collect(Collectors.toList());
+        //找出一级菜单的子菜单
+        for (Menu menu : list) {
+            menu.setChildren(list.stream().filter(m -> menu.getMenuId().equals(m.getPid())).collect(Collectors.toList()));
+        }
+        return Result.success(parentNode);
+    }
+
 
     /**
      * 添加或修改数据

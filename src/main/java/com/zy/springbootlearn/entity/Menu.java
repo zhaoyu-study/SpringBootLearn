@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
+
 import lombok.Data;
 
 /**
@@ -51,6 +53,12 @@ public class Menu implements Serializable {
     private LocalDateTime updateTime;
 
     private Boolean deleted;
+
+    @TableField(exist = false)//该字段标识数据库没有
+    private List<Menu> children;
+
+    //建立父子级关系
+    private Integer pid;
 
 /*    @TableField(exist = false)
     private static final long serialVersionUID = 1L;*/
