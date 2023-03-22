@@ -1,6 +1,9 @@
 package com.zy.springbootlearn.controller.dto;
 
+import com.zy.springbootlearn.entity.Menu;
 import lombok.Data;
+
+import java.util.List;
 
 //接收前端登录请求参数
 
@@ -12,4 +15,6 @@ public class UserDTO {
     private String uNickname;
     private String avatar;
     private String token;
+    private String uRole;
+    private List<Menu> menus;
 }

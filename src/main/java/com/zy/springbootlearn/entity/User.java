@@ -42,6 +42,9 @@ public class User {
     @Alias("地址")
     private String uAddress;
 
+    @Alias("角色")
+    private String uRole;
+
     private String avatar;
 
     @TableField(fill = FieldFill.INSERT)

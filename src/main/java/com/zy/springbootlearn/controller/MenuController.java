@@ -4,9 +4,12 @@ package com.zy.springbootlearn.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.zy.springbootlearn.common.Constants;
 import com.zy.springbootlearn.common.Result;
+import com.zy.springbootlearn.entity.Dict;
 import com.zy.springbootlearn.entity.Menu;
 import com.zy.springbootlearn.entity.Role;
+import com.zy.springbootlearn.service.DictService;
 import com.zy.springbootlearn.service.MenuService;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +33,8 @@ public class MenuController {
     @Resource
     private MenuService menuService;
 
+    @Resource
+    private DictService dictService;
     /**
      * 分页查询所有数据
      *
@@ -48,18 +53,8 @@ public class MenuController {
 
     @GetMapping("/findAll")
     public Result findAll(@RequestParam(defaultValue = "") String menuName){
-        QueryWrapper<Menu> wrapper = new QueryWrapper<>();
-        if(!menuName.equals(""))
-            wrapper.like("menu_name",menuName);
-        //查询所有数据
-        List<Menu> list = menuService.list(wrapper);
-        //先找出pid为null的一级菜单
-        List<Menu> parentNode = list.stream().filter(menu -> menu.getPid() == null).collect(Collectors.toList());
-        //找出一级菜单的子菜单
-        for (Menu menu : list) {
-            menu.setChildren(list.stream().filter(m -> menu.getMenuId().equals(m.getPid())).collect(Collectors.toList()));
-        }
-        return Result.success(parentNode);
+        List<Menu> menus = menuService.findMenus(menuName);
+        return Result.success(menus);
     }
 
 
@@ -97,6 +92,18 @@ public class MenuController {
     @DeleteMapping("/delBatchById")
     public Result deleteBatch(@RequestBody List<Integer> ids) {
         return Result.success(this.menuService.removeByIds(ids));
+    }
+
+
+    /**
+     * 获取dict表的图标信息
+     * @return
+     */
+    @GetMapping("/icons")
+    public Result getIcons() {
+        QueryWrapper<Dict> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("dict_type", Constants.DICT_TYPE_ICON);
+        return Result.success(dictService.list(queryWrapper));
     }
 }
 

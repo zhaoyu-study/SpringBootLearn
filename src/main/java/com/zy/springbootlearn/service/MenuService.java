@@ -1,7 +1,10 @@
 package com.zy.springbootlearn.service;
 
+import com.zy.springbootlearn.common.Result;
 import com.zy.springbootlearn.entity.Menu;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
 * @author 呀哈哈
@@ -10,4 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface MenuService extends IService<Menu> {
 
+    List<Menu> findMenus(String menuName);
 }

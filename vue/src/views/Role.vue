@@ -45,7 +45,7 @@
           :total=total>
       </el-pagination>
     </div>
-    <el-dialog title="用户信息" :visible.sync="dialogFormVisible" width="40%" :before-close="cancel" custom-class="class_radius">
+    <el-dialog title="用户信息" :visible.sync="dialogFormVisible" width="40%" style="text-align:center" :before-close="cancel" custom-class="class_radius">
       <el-form :model="{form}"  label-width="80px" size="big" >
         <el-form-item label="用户名" >
           <el-input v-model="form.roleName" autocomplete="off"></el-input>
@@ -56,24 +56,29 @@
       </el-form>
 
       <div slot="footer" class="dialog-footer" style="text-align: center">
-        <el-button @click="cancel()">取 消</el-button>
+        <el-button @click="cancel">取 消</el-button>
         <el-button type="primary" @click="save">确 定</el-button>
       </div>
     </el-dialog>
 
-    <el-dialog title="菜单分配" :visible.sync="MenuDialogVisible" width="40%" :before-close="cancel" custom-class="class_radius">
+    <el-dialog title="菜单分配" :visible.sync="MenuDialogVisible" width="40%" style="text-align:center" :before-close="cancel" custom-class="class_radius">
       <el-tree
           :props="props"
           :data="menuData"
           show-checkbox
-          node-key="id"
-          :default-expanded-keys="[1,2]"
-          @check-change="handleCheckChange">
+          node-key="menuId"
+          ref="tree"
+          :default-expand-all="true">
+<!--          :default-expanded-keys="expends">-->
+<!--          @check-change="handleCheckChange">-->
+        <span class="custom-tree-node" slot-scope="{ node, data }">
+          <span><i :class="data.menuIcon" style="margin-right: 10px"></i>{{ data.menuName }}</span>
+        </span>
       </el-tree>
 
       <div slot="footer" class="dialog-footer" style="text-align: center">
-        <el-button @click="cancel()">取 消</el-button>
-        <el-button type="primary" @click="save">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+        <el-button type="primary" @click="saveRoleMenu">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -85,6 +90,7 @@ export default {
   data(){
     return{
       roleName:"",
+      roleId: 0,
       tableData: [],
       total: 0,
       pageNo:1,
@@ -96,36 +102,11 @@ export default {
       menuData:[],
       props:{
         label:"menuName"
-      },//指定节点标签为节点对象的某个属性值
-/*      menuData: [{
-        id: 1,
-        label: '主页',
-        children: []
-      },{
-        id: 2,
-        label: '系统管理',
-        children: [{
-          id: 3,
-          label: '用户管理',
-          children: []
-        },{
-          id: 4,
-          label: '角色管理',
-          children: []
-        },{
-          id: 5,
-          label: '菜单管理',
-          children: []
-        },{
-          id: 6,
-          label: '文件管理',
-          children: []
-        }]
-      }],*/
-/*      defaultProps: {
-        children: 'children',
-        label: 'label'
-      }*/
+      },
+      expends:[],
+      checks:[],
+      //指定节点标签为节点对象的某个属性值
+
     }
   },
   created() {
@@ -203,6 +184,7 @@ export default {
     cancel(){
       this.form={};
       this.dialogFormVisible=false;
+      this.MenuDialogVisible=false;
     },
     handleCurrentChange(pageNo){
       //console.log(pageNo)
@@ -216,6 +198,7 @@ export default {
     },
     selectMenu(roleId){
       this.MenuDialogVisible=true
+      this.roleId = roleId
       //请求菜单数据
       this.request.get("/menu/findAll",{
         params:{
@@ -223,12 +206,28 @@ export default {
         }
       }).then(res =>{
         this.menuData = res.data;
+        //把后台返回的菜单数据处理成id数组
+        this.expend = this.menuData.map(v => v.menuId)
+      })
+
+      //请求菜单数据
+      this.request.get("/roleMenu/"+roleId).then(res =>{
+        this.checks = res.data;
+        this.$refs.tree.setCheckedKeys(this.checks)
       })
 
     },
 
-    handleCheckChange(data, checked, indeterminate) {
-      console.log(data, checked, indeterminate);
+    saveRoleMenu(){
+      //console.log(this.$refs.tree.getCheckedKeys().concat(this.$refs.tree.getHalfCheckedKeys()));
+      this.request.post("/roleMenu/"+this.roleId,this.$refs.tree.getCheckedKeys()).then(res =>{
+        if(res.code === '200'){
+          this.$message.success("菜单分配成功")
+          this.MenuDialogVisible = false
+        }else {
+          this.$message.error("菜单分配失败")
+        }
+      })
     },
 
   }

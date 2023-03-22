@@ -38,6 +38,10 @@ public class Role implements Serializable {
      */
     private String roleDescription;
 
+    /**
+     * 角色 唯一标识
+     */
+    private String roleKey;
 
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;

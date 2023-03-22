@@ -2,6 +2,7 @@ package com.zy.springbootlearn.mapper;
 
 import com.zy.springbootlearn.entity.Role;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
 * @author 呀哈哈
@@ -11,6 +12,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface RoleMapper extends BaseMapper<Role> {
 
+    Integer selectByRoleKey( String roleKey);
 }
 
 

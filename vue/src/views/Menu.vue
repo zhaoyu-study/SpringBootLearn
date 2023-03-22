@@ -25,8 +25,13 @@
       </el-table-column>
       <el-table-column prop="menuPath" align="center" label="菜单路径" width="100">
       </el-table-column>
+
       <el-table-column prop="menuIcon" align="center" label="菜单图标" width="100">
+        <template slot-scope="scope">
+          <i :class="scope.row.menuIcon" style="font-size: 18px"></i>
+        </template>
       </el-table-column>
+
       <el-table-column prop="menuDescription" align="center" label="菜单描述" width="100">
       </el-table-column>
 
@@ -49,7 +54,7 @@
           :total=total>
       </el-pagination>
     </div>-->
-    <el-dialog title="用户信息" :visible.sync="dialogFormVisible" width="40%" :before-close="cancel">
+    <el-dialog title="菜单信息" :visible.sync="dialogFormVisible" style="text-align:center" width="40%" :before-close="cancel" custom-class="class_radius">
       <el-form :model="{form}"  label-width="80px" size="big">
         <el-form-item label="菜单名称" >
           <el-input v-model="form.menuName" autocomplete="off"></el-input>
@@ -58,7 +63,12 @@
           <el-input v-model="form.menuPath" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="菜单图标" >
-          <el-input v-model="form.menuIcon" autocomplete="off"></el-input>
+<!--          <el-input v-model="form.menuIcon" autocomplete="off"></el-input>-->
+          <el-select clearable v-model="form.menuIcon" placeholder="请选择" style="width: 100%">
+            <el-option v-for="item in options" :key="item.dictName" :label="item.dictName" :value="item.dictValue">
+              <i :class="item.dictValue" style="margin-right: 10px"/>{{item.dictName}}
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="菜单描述" >
           <el-input v-model="form.menuDescription" autocomplete="off"></el-input>
@@ -86,6 +96,7 @@ export default {
       dialogFormVisible: false,
       form:{},
       multipleSelection:[],
+      options:[],
     }
   },
   created() {
@@ -100,9 +111,8 @@ export default {
           menuName:this.menuName
         }
       }).then(res =>{
-        //console.log(res);
         this.tableData = res.data;
-        //this.total=res.data.total;
+
       })
     },
 
@@ -127,6 +137,10 @@ export default {
     handleEdit(row){
       this.form=row
       this.dialogFormVisible=true
+      //请求图标的数据
+      this.request.get("/dict/icons").then(res =>{
+        this.options = res.data;
+      })
     },
 
     handleSelectionChange(val){
@@ -198,5 +212,8 @@ export default {
 <style scoped>
 .headerBg{
   background: aqua !important;
+}
+.class_radius{
+  border-radius: 13px;
 }
 </style>

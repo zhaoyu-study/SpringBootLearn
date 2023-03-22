@@ -75,5 +75,10 @@ public class RoleController {
     public Result deleteBatch(@RequestBody List<Integer> ids) {
         return Result.success(this.roleService.removeByIds(ids));
     }
+
+    @GetMapping("/selectAll")
+    public Result selectAll(){
+        return Result.success(this.roleService.list());
+    }
 }
 

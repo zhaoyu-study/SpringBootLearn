@@ -13,4 +13,7 @@
     <sql id="Base_Column_List">
 
     </sql>
+    <select id="selectByRoleKey" resultType="java.lang.Integer">
+        select role_id from t_role where role_key = #{roleKey}
+    </select>
 </mapper>

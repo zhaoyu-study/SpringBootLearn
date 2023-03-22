@@ -32,6 +32,8 @@
       </el-table-column>
       <el-table-column prop="uname" align="center" label="姓名" width="100" >
       </el-table-column>
+      <el-table-column prop="urole" align="center" label="角色" width="100">
+      </el-table-column>
       <el-table-column prop="unickname" align="center" label="昵称" width="100">
       </el-table-column>
       <el-table-column prop="uemail" align="center" label="邮箱" width="250">
@@ -59,10 +61,16 @@
           :total=total>
       </el-pagination>
     </div>
-    <el-dialog title="用户信息" :visible.sync="dialogFormVisible" width="40%" :before-close="cancel">
+    <el-dialog title="用户信息" :visible.sync="dialogFormVisible" style="text-align:center" width="40%" :before-close="cancel" custom-class="class_radius">
       <el-form :model="{form}"  label-width="80px" size="big">
         <el-form-item label="用户名" >
           <el-input v-model="form.uname" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="角色" >
+          <el-select clearable v-model="form.urole" placeholder="请选择角色" style="width: 100%">
+            <el-option v-for="item in roles" :key="item.roleName" :label="item.roleDescription" :value="item.roleKey">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="昵称" >
           <el-input v-model="form.unickname" autocomplete="off"></el-input>
@@ -100,6 +108,7 @@ export default {
       dialogFormVisible: false,
       form:{},
       multipleSelection:[],
+      roles:[],
     }
   },
   created() {
@@ -117,6 +126,10 @@ export default {
         console.log(res);
         this.tableData = res.Data;
         this.total=res.Total;
+      })
+
+      this.request.get("/role/selectAll").then(res =>{
+        this.roles = res.data
       })
     },
     save(){
@@ -228,5 +241,8 @@ export default {
 <style scoped>
 .headerBg{
   background: aqua !important;
+}
+.class_radius{
+  border-radius: 13px;
 }
 </style>
